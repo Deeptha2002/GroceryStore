@@ -64,13 +64,14 @@ def create_app():
 app,api,celery,cache = create_app()
 
 # Import all the controllers so they are loaded
-# from application.controllers import *
-# from application.api import *
-# api.add_resource(UserLoginAPI, "/api/adduser")
-# api.add_resource(CategoryAPI, "/api/getcategory","/api/addcategory","/api/editcategory/<Id>","/api/deletecategory/<Id>")
-# api.add_resource(ProductAPI, "/api/getcategory")
+from application.controllers import *
+from application.api import *
+api.add_resource(UserLoginAPI, "/api/getuser/<email>","/api/adduser")
+api.add_resource(CategoryAPI, "/api/getcategory","/api/addcategory","/api/editcategory/<id>","/api/deletecategory/<id>")
+api.add_resource(ProductAPI, "/api/getproduct","/api/addproduct","/api/editproduct/<id>","/api/deleteproduct/<id>")
+api.add_resource(CartAPI, "/api/getcart","/api/addcart","/api/editcart/<id>","/api/delete/<id>")
 
 if __name__ == '__main__':
   # Run the Flask app
   app.run(host='0.0.0.0')
-
+#localhost:5000
