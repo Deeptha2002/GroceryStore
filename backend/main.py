@@ -1,11 +1,15 @@
 import os
 from flask import Flask
 from application import config
-from application.config import LocalDevelopmentConfig
+from application.config import LocalDevelopmentConfig, StageConfig
 from application.database import db
 from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
+from flask_security import Security, SQLAlchemySessionUserDatastore
 from application.models import *
+from flask_caching import Cache
+from application import workers
+
 
 app = None
 api= None
@@ -23,6 +27,11 @@ def create_app():
       print("Staring  stage")
       app.config.from_object(StageConfig)
       print("pushed config")
+    else:
+      app.logger.info("Staring Local Development.")
+      print("Staring Local Development")
+      app.config.from_object(LocalDevelopmentConfig)
+      print("pushed config")
     app.app_context().push()
     print("DB Init")
     db.init_app(app)
@@ -35,6 +44,7 @@ def create_app():
     security = Security(app, user_datastore)
     api = Api(app)
     app.app_context().push()
+    
     # Create celery   
     celery = workers.celery
 
@@ -62,5 +72,5 @@ app,api,celery,cache = create_app()
 
 if __name__ == '__main__':
   # Run the Flask app
-  app.run(host='0.0.0.0',port=8080)
+  app.run(host='0.0.0.0')
 

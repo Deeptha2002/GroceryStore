@@ -1,6 +1,13 @@
 from .database import db
+from flask_security import UserMixin, RoleMixin
 
-class User(db.Model):
+class Role(db.Model, RoleMixin):
+    __tablename__ = 'role'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(80), unique=True)
+    users = db.relationship('User', backref='role', cascade='all,delete-orphan')
+
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer,primary_key=True, autoincrement=True, nullable=False, unique=True)
     email = db.Column(db.String, nullable=False)
