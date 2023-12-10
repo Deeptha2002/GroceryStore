@@ -66,7 +66,7 @@ app,api,celery,cache = create_app()
 # Import all the controllers so they are loaded
 from application.controllers import *
 from application.api import *
-api.add_resource(UserLoginAPI, "/api/getuser/<email>","/api/adduser")
+api.add_resource(UserAPI, "/api/getuser/<email>","/api/adduser")
 api.add_resource(CategoryAPI, "/api/getcategory","/api/addcategory","/api/editcategory/<id>","/api/deletecategory/<id>")
 api.add_resource(ProductAPI, "/api/getproduct","/api/addproduct","/api/editproduct/<id>","/api/deleteproduct/<id>")
 api.add_resource(CartAPI, "/api/getcart","/api/addcart","/api/editcart/<id>","/api/delete/<id>")

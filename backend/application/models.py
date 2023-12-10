@@ -41,5 +41,13 @@ class Cart(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     quantity = db.Column(db.Integer,nullable=False)
-    purchased=db.Column(db.Boolean,nullable=False)
+
+class Purchased(db.Model):
+    __tablename__='Purchased'
+    id = db.Column(db.Integer,primary_key=True, nullable=False, unique=True,autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    # cart_id=db.Column(db.Integer,db.ForeignKey('cart.id'))
+
+
     

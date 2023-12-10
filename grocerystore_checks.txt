@@ -1,0 +1,35 @@
+views
+1.login
+2.userhome
+3.manager
+4.admin 
+components
+login>
+user login
+admin login
+manager login
+
+userhome>
+category
+product
+buy > form >>proceed to buy or add to cart
+cart > cartitem 
+userprofile
+
+Manager>
+create category
+category
+create product
+product
+summary
+
+Admin
+summary
+approvals/reqs > manager signup >category/product crud 
+
+pending approvals>
+
+
+python list 
+every approval req must be appended into the list as a queue
+

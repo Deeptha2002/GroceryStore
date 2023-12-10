@@ -7,10 +7,10 @@ import string, random
 
 
 cart_fields={
+    'id':fields.Integer,
     'user_id':fields.Integer,
     'product_id':fields.Integer,
     'quantity':fields.Integer,
-    'purchased':fields.Boolean
 }
 
 user_fields = {
@@ -22,6 +22,7 @@ user_fields = {
 }
 
 product_fields={
+    'id': fields.Integer,
     'name':fields.String,
     'price':fields.Integer,
     'unit':fields.String,
@@ -31,6 +32,7 @@ product_fields={
 }
 
 category_fields={
+    'id':fields.Integer,
     'name':fields.String,
     'products':fields.Nested(product_fields)
 }
@@ -43,7 +45,7 @@ user_parser.add_argument('name')
 user_parser.add_argument('password')
 user_parser.add_argument('role')
 
-class UserLoginAPI(Resource):
+class UserAPI(Resource):
     def get(self,email):
           user=User.query.filter_by(email=email).first()
           if not user:
@@ -131,11 +133,17 @@ product_parser.add_argument('category_id')
 
 class ProductAPI(Resource):
     
-    def get(self):
-        products=Product.query.all()
-        if not products:
-            return {'message':'No products found'},404
-        return marshal(products,product_fields),200
+    def get(self,id=None):
+        if id is None:
+            products=Product.query.all()
+            if not products:
+                return {'message':'No products found'},404
+            return marshal(products,product_fields),200
+        product=Product.query.get(id)
+        if product:
+            return marshal(product,product_fields),200
+        else:
+            return {"message":"Invalid product ID"},404
     
     
     def post(self):
@@ -148,13 +156,22 @@ class ProductAPI(Resource):
         category_id=args.get('category_id',None)
         if any(field is None for field in (name, price, unit,expiry,availability, category_id)):
             return {"message":"One or more fields are empty"}, 400
+        iscategory=Category.query.get(category_id)
+        if not iscategory:
+            return {"message":"given category doesn't exist"},400
+        existingproduct=Product.query.filter_by(category_id=category_id,name=name).first()
+        if existingproduct:
+            return {"message":"product already exists in the given category"}
         product = Product(name=name,price=price,unit=unit,expiry=expiry,availability=availability,category_id=category_id)
         db.session.add(product)
         db.session.commit()
         return marshal(product,product_fields), 201
     
-    @marshal_with(product_fields)
     def put(self,id):
+        #if id is valid
+        product=Product.query.get(id)
+        if not product:
+            return {"message":"Invalid product id"},404
         args=product_parser.parse_args()
         name=args.get('name',None)
         price=args.get('price',None)
@@ -162,6 +179,14 @@ class ProductAPI(Resource):
         expiry=args.get('expiry',None)
         availability=args.get('availability',None)
         category_id=args.get('category_id',None)
+        if any(field is None for field in (name, price, unit,expiry,availability, category_id)):
+            return {"message":"One or more fields are empty"}, 400
+        iscategory=Category.query.get(category_id)
+        if not iscategory:
+            return {"message":"given category doesn't exist"},400
+        existingproduct=Product.query.filter_by(category_id=category_id,name=name).first()
+        if existingproduct and existingproduct.id != product.id:
+            return {"message":"product already exists in the given category"}
         updated_product=Product.query.filter_by(id=id).first()
         if updated_product:
             updated_product.name=name
@@ -170,13 +195,15 @@ class ProductAPI(Resource):
             updated_product.expiry=expiry
             updated_product.availability=availability
             updated_product.category_id=category_id
-            return updated_product,200
+            return marshal(updated_product,product_fields),200
         else:
             return {'message':'Product not found'},400
 
 
     def delete(self,id):
         delete_product=Product.query.filter_by(id=id).first()
+        if not delete_product:
+            return {'message':'product not found'},404
         db.session.delete(delete_product)
         db.session.commit()
         return {'message':'product deleted'}
@@ -186,16 +213,18 @@ cart_parser=reqparse.RequestParser()
 cart_parser.add_argument('user_id')
 cart_parser.add_argument('product_id')
 cart_parser.add_argument('quantity')
-cart_parser.add_argument('purchased')
 
 class CartAPI(Resource):
-    @marshal_with(cart_fields)
     def get(self,id=None):
         if id is None:
             cart=Cart.query.all()
+            if not cart:
+                return {"message":"No cart elements found"},400
         else:
             cart=Cart.query.filter_by(id=id).first()
-        return cart,200
+            if not cart:
+                return {"message":"invalid cart id"},400
+        return marshal(cart,cart_fields),200
     
     @marshal_with(cart_fields)
     def post(self):
@@ -203,8 +232,9 @@ class CartAPI(Resource):
         user_id=args.get('user_id',None)
         product_id=args.get('product_id',None)
         quantity=args.get('quantity',None)
-        purchased=args.get('purchased',None)
-        cart= Cart(user_id=user_id, product_id=product_id,quantity=quantity,purchased=purchased)
+        if any(field is None for field in (user_id,product_id,quantity)):
+            return {"message":"One or more fields are empty"}, 400
+        cart= Cart(user_id=user_id, product_id=product_id,quantity=quantity)
         db.session.add(cart)
         db.session.commit()
         return cart, 201
