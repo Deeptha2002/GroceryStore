@@ -1,67 +1,54 @@
 <template>
   <div>
-    <b-nav tabs class="bg-custom-light" align="center">
-      <b-nav-item to="/">Home</b-nav-item>
-      <b-nav-item to="/venues">Categories</b-nav-item>
-      <b-nav-item to="/shows">Products</b-nav-item>
-      <!-- <b-nav-item @click="logout" v-if="loggedIn">Log Out</b-nav-item> -->
-      <!-- <b-nav-item to="/logon" v-else>Log In</b-nav-item> -->
-      <!-- <b-nav-form>
-          <b-form-input size="sm" v-model="search" class="mr-sm-2" placeholder="Search"></b-form-input>
-          <b-button size="sm" class="my-2 my-sm-0" @click="performSearch">Search</b-button>
-      </b-nav-form>
-      <b-nav-item @click="export_data" v-if="adminRole">Export</b-nav-item> -->
-    </b-nav>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Grocery Store</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-between" id="navbarNavDropdown">
+                    <form class="d-flex ms-auto" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <img src="https://p7.hiclipart.com/preview/1022/170/393/users-group-computer-icons-clip-art-user-cliparts.jpg"
+                                    alt="Bootstrap" width="50" height="35">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item" @click="logout" v-if="loggedIn"> Log Out</li>
+                                <li to="/login" v-else>Log In</li>
+                                <li><a class="dropdown-item" href="/login">Manager Login</a></li>
+                                <li><a class="dropdown-item" href="/login">Admin Login</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
   </div>
 </template>
 
 <script>
-// import { excelParser } from "../excel-parser";
-// import {mapState,mapMutations} from 'vuex';
+import {mapState} from 'vuex';
 export default {
-  name: 'MyHeader'
-  // data() {
-  //   return {
-  //     search: '',
-  //   }
-  // },
-//   computed: {
-//     ...mapState(['loggedIn','venueData','adminRole']),
-//     search: {
-//       get() {
-//         return this.$store.getters.search;
-//       },
-//       set(value) {
-//         this.setSearch(value); // Update the Vuex state
-//       },
-//     },
-//   },
-//   methods: {
-//     logon() {
-//       this.$store.dispatch('loginUser')
-//     },
-//     logout() {
-//       this.$store.dispatch('logoutUser')
-//     },
-//     export_data() {
-//       excelParser().exportDataFromJSON(this.venueData, "data", 'csv');
-//     },
-//     ...mapMutations(['setSearch']),
-//     performSearch() {
-//       this.$store.dispatch('setSearch', this.search);
-//     },
-//   },
+    name: 'MyHeader',
+
+    computed: {
+    ...mapState(['loggedIn'])
+    },
+
+    methods: {
+    login() {
+      this.$store.dispatch('loginUser')
+    },
+    logout() {
+      this.$store.dispatch('logoutUser')
+    }
+}
 }
 </script>
-
-<style scoped>
-.bg-custom-light {
-  background-color: #f0f0f0; 
-  padding: 20px 0; 
-}
-
-.nav-link {
-  color: #333;
-  font-size: 18px; 
-}
-</style>

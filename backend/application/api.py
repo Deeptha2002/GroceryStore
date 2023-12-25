@@ -144,6 +144,10 @@ class ProductAPI(Resource):
             return marshal(product,product_fields),200
         else:
             return {"message":"Invalid product ID"},404
+
+    def get(self,category_id):
+          products=Product.query.filter_by(category_id=category_id).all()
+          return marshal(products,product_fields),200
     
     
     def post(self):
@@ -195,6 +199,7 @@ class ProductAPI(Resource):
             updated_product.expiry=expiry
             updated_product.availability=availability
             updated_product.category_id=category_id
+            db.session.commit()
             return marshal(updated_product,product_fields),200
         else:
             return {'message':'Product not found'},400

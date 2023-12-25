@@ -58,6 +58,8 @@ def create_app():
     app.app_context().push()
     cache = Cache(app)
     app.app_context().push()
+    CORS(app, supports_credentials=True)
+    app.config['CORS_HEADERS'] = 'application/json'
     print("Create app complete")
     return app, api, celery, cache
 
