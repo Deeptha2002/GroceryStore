@@ -1,75 +1,41 @@
-<!-- <template>
+<template>
   <div>
-    <button v-if="userRole === 'manager'" @click="addProduct">Add Product</button>
-    
-    Edit Button
-    <button v-if="userRole === 'manager'" @click="editProduct">Edit Product</button>
-    
-    Delete Button
-    <button v-if="userRole === 'manager'" @click="deleteProduct">Delete Product</button>
+    <b-button v-if="(!createClicked && managerRole)" @click="toggleCreate">Create</b-button>
+    <b-modal v-model="createClicked" title="Create New Show" hide-footer>
+      <form @submit.prevent="handleSubmit">
+        <input v-model="newCategory.name" placeholder="Category name" required>
+        <button type="submit">Create Category</button>
+      </form>
+    </b-modal>
   </div>
 </template>
 
 <script>
+// import MyHeader from '@/components/MyHeader.vue';
+import { mapState,mapGetters } from 'vuex';
 export default {
-  data() {
-    return {
-      userRole: '', 
-    };
-  },
-  methods: {
-    async addProduct() {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/api/addproduct', {
-          method: 'POST',
-          headers: {
-          'Content-Type': 'application/json',
-          'Authentication-Token': localStorage.getItem('token')
+    name: 'ManagerView',
+    data() {
+        return {
+            createClicked: false,
+            newCategory: {
+                name: '',
+                products: ''
+            }
+        };
+    },
+    methods: {
+        toggleCreate() {
+            this.createClicked = true;
         },
-        });
-        const data = await response.json();
-        console.log(data)
-        commit('setCategoryData', data);
-        
-      } catch (error) {
-        // Handle errors
-      }
-    },
-    async editProduct() {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/api/editproduct/:id', {
-          method: 'PUT',
-          headers: {
-          'Content-Type': 'application/json',
-          'Authentication-Token': localStorage.getItem('token')
+        handleSubmit() {
+            this.AddCategory(this.newCategory);
+            this.$router.go;
         },
-        });
-        const data = await response.json();
-        // Handle response data as needed
-      } catch (error) {
-        // Handle errors
-      }
     },
-    async deleteProduct() {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/api/deleteproduct/:id', {
-          method: 'DELETE',
-          headers: {
-          'Content-Type': 'application/json',
-          'Authentication-Token': localStorage.getItem('token')
-        },
-        });
-        const data = await response.json();
-        // Handle response data as needed
-      } catch (error) {
-        // Handle errors
-      }
+    computed: {
+        ...mapState(['categoryData', 'managerRole']),
+        ...mapGetters(['AddCategory']),
     },
-  },
-  computed: {
-    userRole() {
-      return this.$store.getters.getUserRole;
-    },
-  },
-};
-</script> -->
+}
+</script>

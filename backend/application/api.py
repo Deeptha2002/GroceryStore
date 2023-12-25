@@ -108,6 +108,7 @@ class CategoryAPI(Resource):
         updated_category=Category.query.filter_by(id=id).first()
         if updated_category:
             updated_category.name=name
+            db.session.commit()
             return marshal(updated_category,category_fields),200
         else:
             return {'message':'category not found'},404
