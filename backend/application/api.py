@@ -3,6 +3,7 @@ from application.models import *
 # from flask_security import auth_required
 from .database import db
 import string, random
+from flask import jsonify
 # from main import cache
 
 
@@ -37,6 +38,11 @@ category_fields={
     'products':fields.Nested(product_fields)
 }
 
+# Purchased_fields={
+#     'id':fields.Integer,
+#     'user_id':fields.Integer,
+#     'product_id':fields.Integer
+# }
 
 
 user_parser = reqparse.RequestParser()
@@ -238,12 +244,13 @@ class CartAPI(Resource):
         user_id=args.get('user_id',None)
         product_id=args.get('product_id',None)
         quantity=args.get('quantity',None)
-        if any(field is None for field in (user_id,product_id,quantity)):
-            return {"message":"One or more fields are empty"}, 400
+        if (user_id is None or product_id is None or quantity is None):
+            return {"message":"One or more fields are empty"}, 404
         cart= Cart(user_id=user_id, product_id=product_id,quantity=quantity)
         db.session.add(cart)
         db.session.commit()
-        return cart, 201
+        return cart, {'message': 'Item added to cart successfully'},201
+        
     
     @marshal_with(cart_fields)
     def put(self,id):
@@ -259,7 +266,7 @@ class CartAPI(Resource):
             updated_cart.quantity=quantity
             updated_cart.purchased=purchased
            
-            return updated_cart,200
+            return updated_cart,200,{'message': 'Item updated to cart successfully'}
         else:
             return {'message':'cart not found'},400
 
@@ -269,7 +276,36 @@ class CartAPI(Resource):
         db.session.delete(delete_cart)
         db.session.commit()
         return {'message':'cart deleted'}
+    
+Purchased_fields={
+    'id':fields.Integer,
+    'user_id':fields.Integer,
+    'product_id':fields.Integer
+}
+    
+purchased_parser = reqparse.RequestParser()
+purchased_parser.add_argument('user_id')
+purchased_parser.add_argument('product_id')
 
+class BuyNowAPI(Resource):
+
+    @marshal_with(Purchased_fields)
+    def post(self):
+        args = purchased_parser.parse_args()
+        user_id = args.get('user_id')
+        product_id = args.get('product_id')
+
+        if any(field is None for field in (user_id, product_id)):
+            return {"message": "One or more fields are empty"}, 400
+
+        item_to_buy = Cart.query.filter_by(user_id=user_id, product_id=product_id).first()
         
-    
-    
+        if item_to_buy:
+            new_purchase = Purchased(user_id=user_id, product_id=product_id)
+            db.session.add(new_purchase)
+            db.session.commit()
+            db.session.delete(item_to_buy)
+            db.session.commit()
+            return jsonify({'message': 'Order successful'}), 200
+
+        return {'message': 'Item not found in cart'}, 404

@@ -27,7 +27,9 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  // history: createWebHistory('/'), // Provide a fallback value
+  mode:'history',
   routes
-})
+});
 
 export default router

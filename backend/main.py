@@ -71,7 +71,8 @@ from application.api import *
 api.add_resource(UserAPI, "/api/getuser/<email>","/api/adduser")
 api.add_resource(CategoryAPI, "/api/getcategory","/api/addcategory","/api/editcategory/<id>","/api/deletecategory/<id>")
 api.add_resource(ProductAPI, "/api/getproduct","/api/addproduct","/api/editproduct/<id>","/api/deleteproduct/<id>")
-api.add_resource(CartAPI, "/api/getcart","/api/addcart","/api/editcart/<id>","/api/delete/<id>")
+api.add_resource(CartAPI, "/api/getcart","/api/addcart","/api/editcart/<id>","/api/deletecart/<id>")
+api.add_resource(BuyNowAPI, "/api/buynow")
 
 if __name__ == '__main__':
   # Run the Flask app

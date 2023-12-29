@@ -10,39 +10,36 @@
           <p :class="{ 'availability-green': product.availability > 0, 'availability-red': product.availability === 0 }">
             {{ product.availability > 0 ? 'Available ' + product.availability + product.unit + 's' : 'Unavailable' }}
           </p>
-          <!-- <div class="card-buttons">
-             <a  href="#" class="card-link">Buy</a> 
-            <b-button @click="toggleView">bookTickets</b-button>
-            <b-modal v-model="viewClicked" title="Book Tickets" hide-footer>
-              <form @submit.prevent="bookTickets">
-                <input v-model="booking.user_name" placeholder="User Name" />
-                <input v-model="booking.num_of_seats" placeholder="Number of Seats" />
-                <button type="submit">Book Tickets</button>
+          <div>
+            <b-button class="btn btn-outline-success" v-if="!createCartClicked" @click="toggleCreateCart()">ADD TO
+              CART</b-button>
+            <b-modal  v-model="createCartClicked" title="Add to Cart" hide-footer>
+              <form v-if="createCartClicked" @submit.prevent="handleSubmitCart(product)">
+                <input v-model="newCart_obj.quantity" placeholder="Quantity required" required>
+                <button type="submit">Add to cart</button>
               </form>
             </b-modal>
-            <a href="#" class="card-link">Add to cart</a>
-          </div> -->
+            <b-button class="btn btn-outline-success" @click="BuyNow(product)">Buy Now</b-button>
+          </div>
         </div>
         <div>
-            <b-button v-b-modal.modal-1 class="btn btn-outline-success" @click="toggleCreate(product)"
-              v-if="(!createClicked && managerRole)">Edit</b-button>
-
-            <b-modal v-model="createClicked" title="Edit Product" hide-footer>
-              <form v-if="createClicked" @submit.prevent="handleUpdate" class="edit-form">
-                <div class="edit-form-container">
-                  <input v-model="newProduct.name" placeholder="Product Name" required>
-                  <input v-model="newProduct.price" placeholder="Product Price" required>
-                  <input v-model="newProduct.unit" placeholder="Product Units" required>
-                  <input v-model="newProduct.expiry" placeholder="Product Expiry" required>
-                  <input v-model="newProduct.availability" placeholder="Product Availability" required>
-                  <button type="submit">Update Category</button>
-                </div>
-              </form>
-            </b-modal>
-        </div>
-
-        <b-button class="btn btn-outline-success" @click="deleteCategory(category.id)"
+        <b-button class="btn btn-outline-success" @click="toggleCreate(product)"
+          v-if="(!createClicked && managerRole)">Edit</b-button>
+        <b-modal v-model="createClicked" title="Edit Product" hide-footer>
+          <form v-if="createClicked" @submit.prevent="handleUpdate" class="edit-form">
+            <div class="edit-form-container">
+              <input v-model="newProduct.name" placeholder="Product Name" required>
+              <input v-model="newProduct.price" placeholder="Product Price" required>
+              <input v-model="newProduct.unit" placeholder="Product Units" required>
+              <input v-model="newProduct.expiry" placeholder="Product Expiry" required>
+              <input v-model="newProduct.availability" placeholder="Product Availability" required>
+              <button type="submit">Update Category</button>
+            </div>
+          </form>
+        </b-modal>
+        <b-button class="btn btn-outline-success" @click="DeleteProduct(product)"
           v-if="managerRole">Delete</b-button>
+        </div>
       </div>
     </div>
   </div>
@@ -71,6 +68,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  overflow: auto;
 }
 
 .product-card {
@@ -94,14 +92,6 @@
   /* Adjust color as needed */
 }
 
-
-.card-link {
-  margin-left: 10px;
-  text-decoration: none;
-  color: #007bff;
-  /* Adjust color as needed */
-}
-
 @media (max-width: 767px) {
   .product-card {
     width: calc(50% - 10px);
@@ -111,17 +101,21 @@
 </style>
   
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
   name: 'MyProduct',
   props: ['products'],
   computed: {
     ...mapState(['managerRole']),
+    ...mapGetters(['EditProduct', 'DeleteProduct', 'AddToCart', 'BuyNow'])
   },
   data() {
     return {
+      viewClicked: false,
+      createCartClicked: false,
       createClicked: false,
+      // createClicked: false,
       newProduct: {
         id: null,
         name: '',
@@ -130,7 +124,12 @@ export default {
         expiry: '',
         availability: null,
         category_id: null
-      }
+      },
+      newCart_obj: {
+        user_id: null,
+        product_id: null,
+        quantity: null
+      },
     }
   },
   methods: {
@@ -145,9 +144,25 @@ export default {
       this.newProduct.category_id = product.category_id;
       // this.createClicked = true;
     },
+    toggleCreateCart() {
+      this.createCartClicked = true;
+    },
     handleUpdate() {
       this.EditProduct(this.newProduct);
       // this.$router.go;
+    },
+    handleSubmitCart(product) {
+      // this.AddToCart(this.newCart_obj);
+      // Reset the modal after submitting to cart
+      if(localStorage.getItem("loggedIn") !== "true"){
+        this.$router.push("/login")
+      }
+      else{
+        this.newCart_obj.user_id=localStorage.getItem("userID");
+        this.newCart_obj.product_id=product.id;
+        this.AddToCart(this.newCart_obj);
+      }
+      this.createCartClicked = false;
     },
   },
 

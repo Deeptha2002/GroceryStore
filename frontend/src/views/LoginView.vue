@@ -1,4 +1,5 @@
 <template>
+
   <div class="container">
     <div class="main">
 
@@ -7,6 +8,7 @@
           <b-form autocomplete="off" @submit.prevent="handleSignup">
             <label aria-hidden="true">Sign up</label>
             <input type="email" v-model="user.email" placeholder="Email" required>
+            <input type="name" v-model="user.name" placeholder="Name" required>
             <input type="password" v-model="user.password" placeholder="Password" required>
             <input type="password" v-model="user.confirmPassword" placeholder="Confirm Password" required>
             <button type="submit">Sign up</button>
@@ -15,13 +17,13 @@
         </div>
 
         <div v-else>
-          <b-form autocomplete="off" @submit.stop.prevent="handleLogin">
+          <form autocomplete="off" @submit.prevent="handleLogin">
             <label aria-hidden="true">Login</label>
             <input type="email" v-model="user.email" placeholder="Email" required>
             <input type="password" v-model="user.password" placeholder="Password" required>
             <button type="submit">Login</button>
             <p>Don't have an account? <a @click="toggleForms">Sign up</a></p>
-          </b-form>
+          </form>
         </div>
       </div>
     </div>
@@ -36,6 +38,7 @@ export default {
       showSignup: false,
       user:{
         email:"",
+        name:"",
         password:"",
         confirmPassword:"",
       }
@@ -46,14 +49,15 @@ export default {
       this.showSignup = !this.showSignup;
     },
     handleSignup() {
-        fetch(`http://127.0.0.1:8080/api/adduser`, {
+        fetch(`http://127.0.0.1:5000/api/adduser`, {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     email:this.user.email,
-                    password:this.user.password
+                    password:this.user.password,
+                    name:this.user.name
                 })
                 })
                 .then(response => {
@@ -67,13 +71,13 @@ export default {
         },
 
     handleLogin() {
-      this.$store.dispatch('loginUser',{email:this.user.email, password:this.user.password})
+      this.$store.dispatch('loginUser',JSON.stringify({"email":this.user.email, "password":this.user.password}))
     },
     }
 }
 
 </script>
-<style scoped>
+<!-- <style scoped>
 :root {
   --green: #27ae60;
   --black: #192a56;
@@ -161,6 +165,6 @@ button:hover {
 
 /* Add more styles as needed */
 
-</style>
+</style> -->
 
 

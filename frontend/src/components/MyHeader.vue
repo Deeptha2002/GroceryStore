@@ -16,10 +16,12 @@
                                     alt="Bootstrap" width="50" height="35">
                             </a>
                             <ul class="dropdown-menu">
-                                <!-- <li class="dropdown-item" @click="logout" v-if="loggedIn"> Log Out</li> -->
-                                <!-- <li to="/login" v-else>Log In</li> -->
-                                <li><a class="dropdown-item" href="/login">Manager Login</a></li>
-                                <li><a class="dropdown-item" href="/login">Admin Login</a></li>
+                                <li v-if="loggedIn"> <a class="dropdown-item" @click="logout"> Log Out</a></li> 
+                                <li  v-else><a href="/login">Log In</a></li>
+                                <!-- <li><a class="dropdown-item" href="/login"> User Login</a></li> -->
+                                <!-- <li><a class="dropdown-item" href="/login"> Manager Login</a></li> -->
+                                <!-- <li><a class="dropdown-item" href="/login"> Admin Login</a></li> -->
+                                
                             </ul>
                         </li>
                     </ul>
@@ -35,16 +37,16 @@ export default {
     name: 'MyHeader',
 
     computed: {
-    ...mapState(['managerRole'])
+    ...mapState(['managerRole','loggedIn'])
     },
 
     methods: {
-    // login() {
-    //   this.$store.dispatch('loginUser')
-    // },
-    // logout() {
-    //   this.$store.dispatch('logoutUser')
-    // }
+    login() {
+      this.$store.dispatch('loginUser')
+    },
+    logout() {
+      this.$store.dispatch('logoutUser')
+    }
 }
 }
 </script>

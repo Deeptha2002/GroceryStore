@@ -18,7 +18,9 @@
       },
     },
     mounted() {
+    
       this.$store.dispatch('fetchProductsData');
+      
     },
     components: {
       MyHeader,
