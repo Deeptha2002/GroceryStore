@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div>
+    <MyHeader />
+    <!-- <MyCategory :categoryData="categoryData" /> -->
+    </div>
+    <div>
     <b-button v-if="(!createClicked && managerRole)" @click="toggleCreate">Create</b-button>
     <b-modal v-model="createClicked" title="Create New Show" hide-footer>
       <form @submit.prevent="handleSubmit">
@@ -8,10 +13,13 @@
       </form>
     </b-modal>
   </div>
+  </div>
 </template>
 
 <script>
-// import MyHeader from '@/components/MyHeader.vue';
+import MyHeader from '@/components/MyHeader.vue';
+// import MyCategory from '@/components/MyCategory.vue';
+
 import { mapState,mapGetters } from 'vuex';
 export default {
     name: 'ManagerView',
@@ -36,6 +44,10 @@ export default {
     computed: {
         ...mapState(['categoryData', 'managerRole']),
         ...mapGetters(['AddCategory']),
+    },
+    components: {
+      MyHeader,
+      // MyCategory,
     },
 }
 </script>

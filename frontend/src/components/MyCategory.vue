@@ -2,6 +2,7 @@
 <template>
   <div>
     <div v-if="categoryData && categoryData.length">
+
       <div v-for="category in categoryData" :key="category.id" class="card">
         <h2 class="card-header">
           <span class="category-name-highlight">{{ category.name }}</span>
@@ -16,6 +17,9 @@
         </b-modal>
         <b-button class="btn btn-outline-success" @click="DeleteCategory(category.id)"
           v-if="managerRole">Delete</b-button>
+          <!-- <b-button class="btn btn-outline-success" @click="toggleCreate(products)"
+          v-if="">Add Products</b-button> -->
+          
         <div class="card" style="width: 18rem;"></div>
         <div class="card-body">
           <MyProduct :products="category.products" />
